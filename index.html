@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Popeye's Sales Team</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{--red:#b5121b;--red-dark:#8f0e15;--ink:#1d2129;--muted:#6b7280;--line:#e5e7eb;--bg:#f4f5f7;--good:#15803d}
+  *{box-sizing:border-box}
+  body{margin:0;font-family:'Inter',system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif;background:var(--bg);color:var(--ink);font-size:15px;-webkit-font-smoothing:antialiased}
+  .hidden{display:none!important}
+  .topbar{background:var(--ink);color:#fff;border-bottom:4px solid var(--red)}
+  .topbar-inner{max-width:1000px;margin:0 auto;padding:12px 20px;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+  .brand{font-weight:800;letter-spacing:.14em;font-size:16px}
+  .brand span{color:#f87171;font-weight:600;letter-spacing:.02em;margin-left:8px;font-size:13px}
+  .userbox{font-size:14px;color:#d1d5db;display:flex;align-items:center;gap:12px}
+  nav{background:#fff;border-bottom:1px solid var(--line)}
+  .nav-inner{max-width:1000px;margin:0 auto;display:flex;flex-wrap:wrap;padding:0 12px}
+  nav button{background:none;border:none;padding:14px;font:600 14px 'Inter',system-ui,sans-serif;color:var(--muted);cursor:pointer;border-bottom:3px solid transparent;margin-bottom:-1px}
+  nav button:hover{color:var(--ink)}
+  nav button.active{color:var(--red);border-bottom-color:var(--red)}
+  main{max-width:1000px;margin:0 auto;padding:22px 20px 40px}
+  .card{background:#fff;border:1px solid var(--line);border-radius:10px;padding:18px;margin-bottom:14px;box-shadow:0 1px 2px rgba(0,0,0,.04)}
+  h2,h3{font-weight:700;letter-spacing:-.01em}
+  h3{margin:0 0 12px;font-size:16px}
+  label{display:block;font-size:13px;font-weight:600;color:var(--muted);margin-top:8px}
+  input,select,textarea{width:100%;padding:10px 12px;margin:5px 0 10px;border:1px solid #d1d5db;border-radius:7px;font:inherit;font-size:14px;background:#fff;color:var(--ink)}
+  input:focus,select:focus,textarea:focus{outline:2px solid #fbcfd2;border-color:var(--red)}
+  input[type=checkbox]{width:auto;margin-right:6px}
+  .btn{display:inline-block;background:var(--red);color:#fff;border:none;padding:10px 16px;border-radius:7px;font:600 14px 'Inter',system-ui,sans-serif;cursor:pointer;margin:6px 8px 6px 0}
+  .btn:hover{background:var(--red-dark)}
+  .btn.sec{background:#fff;color:var(--ink);border:1px solid #d1d5db}
+  .btn.sec:hover{background:#f9fafb}
+  .btn.del{background:#fff;color:var(--red);border:1px solid #f1b5b9}
+  .btn.del:hover{background:#fdf2f2}
+  .btn.block{width:100%;margin:10px 0 0}
+  .small{font-size:12.5px;color:var(--muted)}
+  .error{color:var(--red);font-size:13px;margin-top:10px;word-break:break-word;min-height:18px}
+  .overdue{color:var(--red);font-weight:700}
+  .badge{display:inline-block;font-size:11.5px;font-weight:600;padding:3px 9px;border-radius:999px;background:#eef0f3;color:var(--ink);margin-left:6px;vertical-align:middle}
+  .badge.member{background:var(--good);color:#fff}
+  .login-wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px;background:linear-gradient(160deg,#1d2129 0%,#1d2129 55%,var(--red) 55%)}
+  .login{width:100%;max-width:380px;background:#fff;border-radius:14px;padding:32px 28px;box-shadow:0 20px 50px rgba(0,0,0,.25)}
+  .wordmark{font-weight:800;letter-spacing:.18em;font-size:26px;color:var(--red);text-align:center;margin:0}
+  .tag{text-align:center;color:var(--muted);font-size:13px;margin:6px 0 22px}
+  .syncinfo{font-size:12px;color:var(--muted);text-align:right;margin-bottom:10px;min-height:14px}
+  table{width:100%;border-collapse:collapse;font-size:13.5px}
+  th,td{border:1px solid #cfd4dc;padding:8px;text-align:left}
+  th{background:#f3f4f6}
+  details summary{cursor:pointer;color:var(--red);font-weight:600;font-size:13px;margin-top:8px}
+  .comment{border-bottom:1px solid #f0f1f3;padding:8px 0}
+  @media print{
+    .topbar,nav,.noprint,.syncinfo{display:none!important}
+    body{background:#fff}
+    .card{border:none;padding:0;margin:0;box-shadow:none}
+  }
+</style>
+</head>
+<body>
+
+<div id="loginScreen" class="login-wrap">
+  <div class="login">
+    <h1 class="wordmark">POPEYE'S</h1>
+    <p class="tag">Sales Team System</p>
+    <label>Account</label>
+    <select id="loginUser"><option value="">Loading accounts...</option></select>
+    <label>Password</label>
+    <input type="password" id="loginPass" onkeydown="if(event.key==='Enter')login()">
+    <button class="btn block" onclick="login()">Log in</button>
+    <button class="btn sec block" onclick="loadAccounts()">Reload accounts</button>
+    <div id="loginErr" class="error"></div>
+  </div>
+</div>
+
+<div id="appScreen" class="hidden">
+  <div class="topbar"><div class="topbar-inner">
+    <div class="brand">POPEYE'S <span>Sales Team</span></div>
+    <div class="userbox"><span id="whoami"></span><button class="btn sec" style="margin:0" onclick="logout()">Log out</button></div>
+  </div></div>
+  <nav><div class="nav-inner" id="nav"></div></nav>
+  <main>
+    <div class="syncinfo" id="syncInfo"></div>
+    <div id="view"></div>
+  </main>
+</div>
+
+<script>
+const FN = '/.netlify/functions/airtable';   // server holds the token; the browser never sees it
+const SYNC_SECONDS = 10;
+
+let session = '';            // kept in memory only; closing the tab logs you out
+let users = [], leads = [], comments = [], personal = [];
+let me = null, currentView = 'leads', openLeadId = null, syncTimer = null;
+let dirty = false;
+let searchText = '';
+
+window.addEventListener('unhandledrejection', e =>
+  alert('Error: ' + (e.reason && e.reason.message ? e.reason.message : e.reason)));
+document.addEventListener('input', markDirty);
+document.addEventListener('change', markDirty);
+function markDirty(e){ if (e.target.id !== 'search' && e.target.id !== 'rStatus') dirty = true; }
+
+// ===== HELPERS =====
+function $(id){ return document.getElementById(id); }
+function val(id){ const el = $(id); return el ? el.value.trim() : ''; }
+function esc(s){ return String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+function isTrue(v){ return v === true || v === 'true' || v === 'checked'; }
+function fmtDate(s){
+  if (!s) return '';
+  if (/^\d{4}-\d{2}-\d{2}$/.test(s)) { const [y,m,d] = s.split('-'); return `${d}/${m}/${y}`; }
+  const d = new Date(s); return isNaN(d) ? s : d.toLocaleString();
+}
+function newId(prefix){ return prefix + Date.now().toString(36).toUpperCase() + Math.random().toString(36).slice(2,5).toUpperCase(); }
+function setInfo(t){ $('syncInfo').textContent = t; }
+function myPersonal(leadId){ return personal.find(p => p.username === me.username && p.leadId === leadId); }
+
+// ===== SERVER CALLS =====
+async function call(payload){
+  const res = await fetch(FN, {method: 'POST', headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({...payload, session})});
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) {
+    if (res.status === 401 && session) { logout(); throw new Error('Your session expired. Please log in again.'); }
+    throw new Error(data.error || ('HTTP ' + res.status));
+  }
+  return data;
+}
+async function airtable(method, path, body){ return call({action: 'airtable', method, path, body}); }
+async function fetchAll(table){
+  let out = [], offset = '';
+  do {
+    const d = await airtable('GET', table + '?pageSize=100' + (offset ? '&offset=' + offset : ''));
+    out = out.concat(d.records || []);
+    offset = d.offset || '';
+  } while (offset);
+  return out;
+}
+function mapUsers(recs){
+  return recs
+    .map(r => ({id: r.id, username: String(r.fields.Username || '').trim(), isAdmin: isTrue(r.fields.IsAdmin)}))
+    .filter(u => u.username && u.username.toLowerCase() !== 'username');
+}
+async function loadAll(){
+  const [u, l, c, p] = await Promise.all(['Users','Leads','Comments','Personal'].map(t => fetchAll(t)));
+  users = mapUsers(u);
+  leads = l.map(r => ({id: r.id, leadId: r.fields.LeadID || '', name: r.fields.Name || '', phone: String(r.fields.Phone || ''),
+    type: r.fields.Type || '', createdBy: r.fields.CreatedBy || '', createdAt: r.fields.CreatedAt || '',
+    isMember: isTrue(r.fields.IsMember), memberBy: r.fields.MemberBy || ''}));
+  comments = c.map(r => ({id: r.id, leadId: r.fields.LeadID || '', text: r.fields.Text || '', by: r.fields.By || '', createdAt: r.fields.CreatedAt || ''}));
+  personal = p.map(r => ({id: r.id, key: r.fields.Key || '', username: r.fields.Username || '', leadId: r.fields.LeadID || '',
+    status: r.fields.Status || '', reminderDate: r.fields.ReminderDate || '', reminderTime: r.fields.ReminderTime || '', reminderNote: r.fields.ReminderNote || ''}));
+  if (me) me = users.find(x => x.id === me.id) || me;
+}
+async function afterChange(){
+  await loadAll();
+  render();
+  setInfo('Saved ' + new Date().toLocaleTimeString());
+}
+
+// ===== LOGIN =====
+async function loadAccounts(){
+  $('loginErr').textContent = '';
+  try {
+    const d = await call({action: 'accounts'});
+    const names = d.accounts || [];
+    $('loginUser').innerHTML = '<option value="">-- choose account --</option>' +
+      names.map(n => `<option value="${esc(n)}">${esc(n)}</option>`).join('');
+    if (!names.length) $('loginErr').textContent = 'No accounts found. Check the Users table in Airtable.';
+  } catch (e) {
+    $('loginErr').textContent = 'Cannot load accounts: ' + e.message;
+  }
+}
+async function login(){
+  $('loginErr').textContent = '';
+  const name = val('loginUser'), pass = $('loginPass').value;
+  if (!name) { $('loginErr').textContent = 'Choose an account'; return; }
+  try {
+    const d = await call({action: 'login', username: name, password: pass});
+    session = d.session;
+    me = d.user;
+    await loadAll();
+  } catch (e) {
+    session = ''; $('loginErr').textContent = e.message; return;
+  }
+  $('loginPass').value = '';
+  $('loginScreen').classList.add('hidden');
+  $('appScreen').classList.remove('hidden');
+  $('whoami').textContent = me.username + (me.isAdmin ? ' (admin)' : '');
+  buildNav();
+  currentView = 'leads';
+  render();
+  startSync();
+}
+function logout(){
+  clearInterval(syncTimer);
+  session = ''; me = null; openLeadId = null; dirty = false;
+  $('appScreen').classList.add('hidden');
+  $('loginScreen').classList.remove('hidden');
+  $('loginPass').value = ''; $('loginErr').textContent = ''; setInfo('');
+}
+
+// ===== NAVIGATION & RENDERING =====
+function buildNav(){
+  const items = [['leads','Leads'], ['followups','Follow-ups'], ['reports','Call sheet'], ['password','Password']];
+  if (me.isAdmin) items.push(['admin','Admin']);
+  $('nav').innerHTML = items.map(([v,t]) => `<button data-view="${v}" onclick="goTo('${v}')">${t}</button>`).join('');
+}
+function goTo(v){ currentView = v; if (v !== 'lead') openLeadId = null; render(); }
+function openLead(id){ openLeadId = id; currentView = 'lead'; render(); }
+function render(){ dirty = false; drawApp(); }
+function drawApp(){
+  if (!me) return;
+  document.querySelectorAll('nav button').forEach(b => b.classList.toggle('active', b.dataset.view === currentView));
+  const views = {leads: viewLeads, lead: viewLead, followups: viewFollowups, reports: viewReports, password: viewPassword, admin: viewAdmin};
+  $('view').innerHTML = (views[currentView] || viewLeads)();
+  if (currentView === 'leads') renderLeadList();
+  if (currentView === 'reports') drawReport();
+}
+
+// ===== LEADS =====
+function viewLeads(){
+  return `
+  <div class="card">
+    <h3>Add lead</h3>
+    <label>Name</label><input id="nName">
+    <label>Phone</label><input id="nPhone">
+    <label>Type</label>
+    <select id="nType"><option>Tour</option><option>Social Media</option><option>Call-in</option></select>
+    <label>First comment (optional)</label><textarea id="nComment" rows="2"></textarea>
+    <button class="btn" onclick="addLead()">Add lead</button>
+    <div id="nErr" class="error"></div>
+  </div>
+  <div class="card"><input id="search" placeholder="Search by name, phone or ID" value="${esc(searchText)}" oninput="searchText=this.value;renderLeadList()"></div>
+  <div id="leadList"></div>`;
+}
+function renderLeadList(){
+  const el = $('leadList'); if (!el) return;
+  const q = searchText.trim().toLowerCase();
+  const list = leads
+    .filter(l => !q || l.name.toLowerCase().includes(q) || l.phone.includes(q) || l.leadId.toLowerCase().includes(q))
+    .sort((a,b) => (b.createdAt || '').localeCompare(a.createdAt || ''));
+  if (!list.length) { el.innerHTML = '<div class="card small">No leads found.</div>'; return; }
+  el.innerHTML = list.map(l => {
+    const p = myPersonal(l.leadId) || {};
+    const n = comments.filter(c => c.leadId === l.leadId).length;
+    return `<div class="card" style="cursor:pointer" onclick="openLead('${esc(l.leadId)}')">
+      <b>${esc(l.name)}</b> <span class="small">${esc(l.phone)} · ${esc(l.type)}</span>
+      ${l.isMember ? '<span class="badge member">Member</span>' : ''}
+      ${p.status ? `<span class="badge">${esc(p.status)}</span>` : ''}
+      <div class="small">${esc(l.leadId)} · added by ${esc(l.createdBy)} · ${n} comment(s)</div>
+    </div>`;
+  }).join('');
+}
+function viewLead(){
+  const l = leads.find(x => x.leadId === openLeadId);
+  if (!l) { currentView = 'leads'; return viewLeads(); }
+  const p = myPersonal(l.leadId) || {};
+  const cs = comments.filter(c => c.leadId === l.leadId).sort((a,b) => (a.createdAt || '').localeCompare(b.createdAt || ''));
+  const canDelete = me.isAdmin || l.createdBy === me.username;
+  const statusOpts = ['', 'Cold', 'Warm', 'Hot', 'Member'].map(s =>
+    `<option value="${s}" ${(p.status || '') === s ? 'selected' : ''}>${s || '-- none --'}</option>`).join('');
+  return `
+  <button class="btn sec" onclick="goTo('leads')">← Back</button>
+  <div class="card">
+    <h2 style="margin:0 0 6px">${esc(l.name)} ${l.isMember ? '<span class="badge member">Member</span>' : ''}</h2>
+    <div>${esc(l.phone)} · ${esc(l.type)} · <span class="small">${esc(l.leadId)}</span></div>
+    <div class="small">Added by ${esc(l.createdBy)} on ${esc(fmtDate(l.createdAt))}</div>
+    ${l.isMember ? `<div class="small">Converted by ${esc(l.memberBy)}</div>` : ''}
+  </div>
+  <div class="card">
+    <h3>My status & follow-up <span class="small">(only you see this)</span></h3>
+    <label>Status</label><select id="pStatus">${statusOpts}</select>
+    <label>Reminder date</label><input type="date" id="pDate" value="${esc(p.reminderDate)}">
+    <label>Reminder time</label><input type="time" id="pTime" value="${esc(p.reminderTime)}">
+    <label>Reminder note</label><input id="pNote" value="${esc(p.reminderNote)}">
+    <button class="btn" onclick="savePersonal('${esc(l.leadId)}')">Save</button>
+    <button class="btn sec" onclick="clearReminder('${esc(l.leadId)}')">Clear reminder</button>
+  </div>
+  <div class="card">
+    <h3>Comments <span class="small">(team can see)</span></h3>
+    ${cs.map(c => `<div class="comment"><div>${esc(c.text).replace(/\n/g,'<br>')}</div><div class="small">${esc(c.by)} · ${esc(fmtDate(c.createdAt))}</div></div>`).join('') || '<div class="small">No comments yet.</div>'}
+    <label>New comment</label>
+    <textarea id="newComment" rows="2" placeholder="Write a comment"></textarea>
+    <button class="btn" onclick="addComment('${esc(l.leadId)}')">Add comment</button>
+  </div>
+  <div class="card">
+    ${l.isMember ? '' : `<button class="btn" onclick="markMember('${esc(l.leadId)}')">Mark as Member</button>`}
+    ${canDelete ? `<button class="btn del" onclick="deleteLead('${esc(l.leadId)}')">Delete lead</button>` : ''}
+  </div>`;
+}
+async function addLead(){
+  $('nErr').textContent = '';
+  const name = val('nName'), phone = val('nPhone'), type = val('nType'), note = val('nComment');
+  if (!name || !phone) { $('nErr').textContent = 'Name and phone are required'; return; }
+  const leadId = newId('L'), now = new Date().toISOString();
+  try {
+    await airtable('POST', 'Leads', {typecast: true, records: [{fields: {LeadID: leadId, Name: name, Phone: phone, Type: type, CreatedBy: me.username, CreatedAt: now}}]});
+    if (note) await addCommentRecord(leadId, note);
+    await afterChange();
+  } catch (e) { $('nErr').textContent = e.message; }
+}
+async function addCommentRecord(leadId, text){
+  await airtable('POST', 'Comments', {typecast: true, records: [{fields: {CommentID: newId('C'), LeadID: leadId, Text: text, By: me.username, CreatedAt: new Date().toISOString()}}]});
+}
+async function addComment(leadId){
+  const text = val('newComment');
+  if (!text) return;
+  await addCommentRecord(leadId, text);
+  await afterChange();
+}
+async function setPersonal(leadId, changes){
+  const key = me.username + '|' + leadId;
+  const rec = personal.find(p => p.key === key);
+  if (rec) {
+    await airtable('PATCH', 'Personal', {typecast: true, records: [{id: rec.id, fields: changes}]});
+  } else {
+    const clean = Object.fromEntries(Object.entries(changes).filter(([,v]) => v !== null));
+    await airtable('POST', 'Personal', {typecast: true, records: [{fields: {Key: key, Username: me.username, LeadID: leadId, ...clean}}]});
+  }
+  await afterChange();
+}
+async function savePersonal(leadId){
+  await setPersonal(leadId, {
+    Status: val('pStatus') || null,
+    ReminderDate: val('pDate') || null,
+    ReminderTime: val('pTime') || null,
+    ReminderNote: val('pNote') || null
+  });
+}
+async function clearReminder(leadId){
+  await setPersonal(leadId, {ReminderDate: null, ReminderTime: null, ReminderNote: null});
+}
+async function markMember(leadId){
+  const l = leads.find(x => x.leadId === leadId);
+  await airtable('PATCH', 'Leads', {typecast: true, records: [{id: l.id, fields: {IsMember: true, MemberBy: me.username}}]});
+  await afterChange();
+}
+async function deleteLead(leadId){
+  if (!confirm('Delete this lead and its comments?')) return;
+  const l = leads.find(x => x.leadId === leadId);
+  for (const c of comments.filter(c => c.leadId === leadId)) await airtable('DELETE', 'Comments/' + c.id);
+  for (const p of personal.filter(p => p.leadId === leadId)) await airtable('DELETE', 'Personal/' + p.id);
+  await airtable('DELETE', 'Leads/' + l.id);
+  openLeadId = null; currentView = 'leads';
+  await afterChange();
+}
+
+// ===== FOLLOW-UPS =====
+function viewFollowups(){
+  const now = new Date();
+  const items = personal
+    .filter(p => p.username === me.username && p.reminderDate)
+    .sort((a,b) => (a.reminderDate + (a.reminderTime || '')).localeCompare(b.reminderDate + (b.reminderTime || '')));
+  if (!items.length) return '<div class="card small">No follow-up reminders. Open a lead and set a reminder.</div>';
+  return items.map(p => {
+    const l = leads.find(x => x.leadId === p.leadId);
+    const due = new Date(p.reminderDate + 'T' + (p.reminderTime || '23:59'));
+    const over = due < now;
+    return `<div class="card">
+      <div class="${over ? 'overdue' : ''}">${over ? 'OVERDUE · ' : ''}${esc(fmtDate(p.reminderDate))} ${esc(p.reminderTime)}</div>
+      <b>${esc(l ? l.name : '(deleted lead)')}</b> <span class="small">${esc(l ? l.phone : '')}</span>
+      <div>${esc(p.reminderNote)}</div>
+      ${l ? `<button class="btn" onclick="openLead('${esc(p.leadId)}')">Open</button>` : ''}
+      <button class="btn sec" onclick="clearReminder('${esc(p.leadId)}')">Done</button>
+    </div>`;
+  }).join('');
+}
+
+// ===== CALL SHEET =====
+function viewReports(){
+  return `
+  <div class="card noprint">
+    <label>Show only my status</label>
+    <select id="rStatus" onchange="drawReport()">
+      <option value="">All leads</option><option>Cold</option><option>Warm</option><option>Hot</option><option>Member</option>
+    </select>
+    <button class="btn" onclick="window.print()">Print</button>
+    <button class="btn sec" onclick="exportCsv()">Download CSV</button>
+  </div>
+  <div class="card" id="reportBox"></div>`;
+}
+function reportRows(){
+  const f = val('rStatus');
+  return leads
+    .map(l => ({l, p: myPersonal(l.leadId) || {}}))
+    .filter(x => !f || x.p.status === f)
+    .sort((a,b) => (a.l.createdAt || '').localeCompare(b.l.createdAt || ''));
+}
+function drawReport(){
+  const box = $('reportBox'); if (!box) return;
+  const rows = reportRows();
+  box.innerHTML = `<h3>Call sheet · ${new Date().toLocaleDateString()}</h3>
+    <table>
+      <tr><th>ID</th><th>Name</th><th>Phone</th><th>Type</th><th>My status</th><th>Notes</th></tr>
+      ${rows.map(({l,p}) => `<tr><td>${esc(l.leadId)}</td><td>${esc(l.name)}</td><td>${esc(l.phone)}</td><td>${esc(l.type)}</td><td>${esc(p.status || '')}</td><td style="min-width:160px">&nbsp;</td></tr>`).join('')
+        || '<tr><td colspan="6">No leads</td></tr>'}
+    </table>`;
+}
+function exportCsv(){
+  const header = ['ID','Name','Phone','Type','My status','Added by','Added at','Member'];
+  const rows = [header].concat(reportRows().map(({l,p}) => [l.leadId, l.name, l.phone, l.type, p.status || '', l.createdBy, l.createdAt, l.isMember ? 'Yes' : '']));
+  const csv = rows.map(r => r.map(v => `"${String(v).replace(/"/g,'""')}"`).join(',')).join('\n');
+  const a = document.createElement('a');
+  a.href = 'data:text/csv;charset=utf-8,' + encodeURIComponent('\ufeff' + csv);
+  a.download = 'popeyes-leads.csv';
+  a.click();
+}
+
+// ===== MY PASSWORD =====
+function viewPassword(){
+  return `<div class="card" style="max-width:460px">
+    <h3>Change my password</h3>
+    <label>Current password</label><input type="password" id="oldPass">
+    <label>New password (at least 4 characters)</label><input type="password" id="newPass">
+    <button class="btn" onclick="changePassword()">Change password</button>
+    <div id="pwMsg" class="error"></div>
+  </div>`;
+}
+async function changePassword(){
+  $('pwMsg').textContent = '';
+  const oldPassword = $('oldPass').value, newPassword = $('newPass').value;
+  try {
+    await call({action: 'changePassword', oldPassword, newPassword});
+    alert('Password changed');
+    await afterChange();
+  } catch (e) { $('pwMsg').textContent = e.message; }
+}
+
+// ===== ADMIN: ACCOUNTS =====
+function viewAdmin(){
+  if (!me.isAdmin) return '';
+  return `
+  <div class="card" style="max-width:520px">
+    <h3>Add account</h3>
+    <label>Username</label><input id="auName">
+    <label>Password</label><input id="auPass">
+    <label><input type="checkbox" id="auAdmin"> Admin</label>
+    <button class="btn" onclick="addUser()">Add account</button>
+    <div id="auErr" class="error"></div>
+  </div>
+  <h3>Accounts</h3>
+  ${users.map(userRow).join('')}`;
+}
+function userRow(u){
+  const isSelf = u.id === me.id;
+  return `<div class="card">
+    <b>${esc(u.username)}</b> ${u.isAdmin ? '<span class="badge">Admin</span>' : ''} ${isSelf ? '<span class="small">(you)</span>' : ''}
+    <details><summary>Edit</summary>
+      <label>New username (leave blank to keep)</label><input id="eN-${u.id}">
+      <label>New password (leave blank to keep)</label><input type="password" id="eP-${u.id}">
+      <label><input type="checkbox" id="eA-${u.id}" ${u.isAdmin ? 'checked' : ''}> Admin</label>
+      <button class="btn" onclick="saveUser('${u.id}')">Save</button>
+      ${(u.username === 'admin' || isSelf) ? '' : `<button class="btn del" onclick="deleteUser('${u.id}')">Delete</button>`}
+    </details>
+  </div>`;
+}
+async function addUser(){
+  $('auErr').textContent = '';
+  const n = val('auName'), p = $('auPass').value, a = $('auAdmin').checked;
+  if (!n || !p) { $('auErr').textContent = 'Username and password are required'; return; }
+  if (users.some(u => u.username.toLowerCase() === n.toLowerCase())) { $('auErr').textContent = 'Username already exists'; return; }
+  try {
+    await airtable('POST', 'Users', {typecast: true, records: [{fields: {Username: n, Password: p, IsAdmin: a}}]});
+    await afterChange();
+  } catch (e) { $('auErr').textContent = e.message; }
+}
+async function saveUser(id){
+  const u = users.find(x => x.id === id);
+  const n = val('eN-' + id), p = $('eP-' + id).value, a = $('eA-' + id).checked;
+  if (u.username === 'admin' && !a) { alert('The main admin account must stay admin'); return; }
+  const fields = {IsAdmin: a};
+  if (n) {
+    if (users.some(x => x.id !== id && x.username.toLowerCase() === n.toLowerCase())) { alert('That username already exists'); return; }
+    fields.Username = n;
+  }
+  if (p) fields.Password = p;
+  await airtable('PATCH', 'Users', {typecast: true, records: [{id, fields}]});
+  await afterChange();
+}
+async function deleteUser(id){
+  const u = users.find(x => x.id === id);
+  if (!confirm(`Delete account "${u.username}"?`)) return;
+  await airtable('DELETE', 'Users/' + id);
+  await afterChange();
+}
+
+// ===== SYNC =====
+function startSync(){ clearInterval(syncTimer); syncTimer = setInterval(syncNow, SYNC_SECONDS * 1000); }
+async function syncNow(){
+  if (!me) return;
+  try {
+    await loadAll();
+    if (dirty) {
+      setInfo('Updates waiting - save or switch screens to refresh');
+    } else {
+      if (currentView !== 'admin') drawApp();
+      setInfo('Synced ' + new Date().toLocaleTimeString());
+    }
+  } catch (e) { setInfo('Sync failed: ' + e.message); }
+}
+
+loadAccounts();
+</script>
+</body>
+</html>
